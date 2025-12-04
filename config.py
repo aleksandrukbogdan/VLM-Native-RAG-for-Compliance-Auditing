@@ -1,6 +1,7 @@
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
-# --- Path Settings ---
 #  Get the root directory of the project
 ROOT_PATH = Path(__file__).parent
 
@@ -30,16 +31,23 @@ CHROMA_DB_PATH = DATA_PATH / "chroma_db"
 COLLECTION_NAME = "project_docs"
 
 # --- API Settings ---
-import os
-from dotenv import load_dotenv
-
 load_dotenv()  # Load environment variables from .env file
 
 # API Key (required)
-QWEN_API_KEY = os.getenv("QWEN_API_KEY")
+QWEN_API_KEY = os.getenv("QWEN_API_KEY", "dummy").strip()
 
-# Base URL: defaults to Alibaba Cloud, but can be overridden for local server (e.g. http://localhost:8880/v1)
-QWEN_BASE_URL = os.getenv("QWEN_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+# Base URL: defaults to Alibaba Cloud, but can be overridden for local server
+_base_url = os.getenv("QWEN_BASE_URL", "http://localhost:8880/v1").strip()
+# Fix potential double quotes issue from .env
+if _base_url.startswith('"') and _base_url.endswith('"'):
+    _base_url = _base_url[1:-1]
+if _base_url.startswith("'") and _base_url.endswith("'"):
+    _base_url = _base_url[1:-1]
+
+QWEN_BASE_URL = _base_url
 
 # Model Name: defaults to qwen-vl-max, can be overridden for local model name
-QWEN_MODEL_NAME = os.getenv("QWEN_MODEL_NAME", "qwen-vl-max")
+_model_name = os.getenv("QWEN_MODEL_NAME", "qwen-vl-max").strip()
+if _model_name.startswith('"') and _model_name.endswith('"'):
+    _model_name = _model_name[1:-1]
+QWEN_MODEL_NAME = _model_name

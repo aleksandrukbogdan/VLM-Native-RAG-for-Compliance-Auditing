@@ -139,3 +139,4 @@ def run_targeted_extraction(images_dir: Path, layout_dir: Path) -> Path:
     print(f"Extraction complete. Results saved in {extraction_dir}")
     return extraction_dir
 
+

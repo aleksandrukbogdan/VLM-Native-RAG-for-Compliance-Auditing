@@ -11,7 +11,7 @@ def create_chunk_object(content: str, chunk_type: str, metadata: dict, page_num:
         "content": content,
         "metadata": {
             **metadata, # Include document/sheet metadata
-            "page_number": page_number,
+            "page_number": page_num,
             "type": chunk_type, # 'text', 'table', 'drawing'
             "source": "AI_Parser"
         }

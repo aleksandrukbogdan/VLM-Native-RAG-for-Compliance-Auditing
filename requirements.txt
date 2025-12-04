@@ -3,6 +3,6 @@ pillow
 openai
 python-dotenv
 tqdm
-
-
-
+chromadb
+sentence-transformers
+torch

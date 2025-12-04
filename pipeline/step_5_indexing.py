@@ -13,7 +13,7 @@ class LocalEmbeddingFunction(chromadb.EmbeddingFunction):
         self.model = SentenceTransformer(model_name)
 
     def __call__(self, input):
-        return self.model.encode(input, convert_to_tensor=False).tolist()
+        return self.model.encode(input, batch_size=4, convert_to_tensor=False).tolist()
 
 def run_indexing(chunks_file: str):
     """
@@ -27,6 +27,10 @@ def run_indexing(chunks_file: str):
     with open(chunks_file, "r", encoding="utf-8") as f:
         chunks = json.load(f)
     
+    if not chunks:
+        print("No chunks to index.")
+        return
+        
     print(f"Loaded {len(chunks)} chunks. initializing Vector Store...")
 
     # Initialize Chroma Client
@@ -40,8 +44,8 @@ def run_indexing(chunks_file: str):
     try:
         client.delete_collection(name=config.COLLECTION_NAME)
         print(f"Deleted existing collection '{config.COLLECTION_NAME}'")
-    except ValueError:
-        pass # Collection didn't exist
+    except Exception:
+        pass # Collection didn't exist or error deleting
 
     collection = client.create_collection(
         name=config.COLLECTION_NAME,
@@ -80,7 +84,7 @@ def run_indexing(chunks_file: str):
         metadatas.append(clean_meta)
 
     # Add to Chroma in batches (to avoid memory issues)
-    batch_size = 100 # Smaller batch size for local embedding
+    batch_size = 5 # Smaller batch size for local embedding
     total_batches = (len(ids) + batch_size - 1) // batch_size
 
     for b in tqdm(range(total_batches), desc="Vectorizing"):
@@ -99,4 +103,3 @@ def run_indexing(chunks_file: str):
 
     print(f"Successfully indexed {len(ids)} chunks into '{config.CHROMA_DB_PATH}'")
     return config.CHROMA_DB_PATH
-

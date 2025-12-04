@@ -56,3 +56,4 @@ def analyze_layout(images_dir: Path) -> Path:
     print(f"Layout analysis complete. Results saved in {layout_dir}")
     return layout_dir
 
+
